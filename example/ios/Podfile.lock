@@ -1,0 +1,39 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - tkey-rust-ios (0.0.3)
+  - web3_auth_ts_key (0.0.1):
+    - Flutter
+    - tkey-rust-ios
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - tkey-rust-ios (from `https://github.com/tkey/tkey-swift`)
+  - web3_auth_ts_key (from `.symlinks/plugins/web3_auth_ts_key/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  tkey-rust-ios:
+    :git: https://github.com/tkey/tkey-swift
+  web3_auth_ts_key:
+    :path: ".symlinks/plugins/web3_auth_ts_key/ios"
+
+CHECKOUT OPTIONS:
+  tkey-rust-ios:
+    :commit: ceec28b83e314885e1e55ad100f0034efeef3ef9
+    :git: https://github.com/tkey/tkey-swift
+
+SPEC CHECKSUMS:
+  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  integration_test: 13825b8a9334a850581300559b8839134b124670
+  tkey-rust-ios: fe3611519316367bd15ca1722fa72ef26bf66dc5
+  web3_auth_ts_key: ad4648c8765c133e52ffe6f7bbb3efd3f8a94d2c
+
+PODFILE CHECKSUM: e624026f459e774f09068cc503145245d3b91feb
+
+COCOAPODS: 1.14.3

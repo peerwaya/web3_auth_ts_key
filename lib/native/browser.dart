@@ -15,9 +15,12 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   HeadlessInAppWebView? headlessWebView;
 
   @override
-  Future<void> init(InitializeParams params) async {
+  Future<void> init(InitializeParams params,
+      {InitProgressCallback? progressCallback}) async {
     this.params = params;
-    final webview = headlessWebView ?? await initJsEngine();
+    final webview = headlessWebView ??
+        await initJsEngine(
+            params.webInitialUrl ?? 'https://dev.web.gotok.app/tkey.html');
     await webview.webViewController.callAsyncJavaScript(functionBody: '''
           var initParams = JSON.parse(params);
           const serviceProvider = new ServiceProviderSfa.SfaServiceProvider({
@@ -73,7 +76,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
               idToken: initParams.idToken,
             });
             const hex = await oauthShare.toString("hex");
-            console.log("hex ", hex);
             return hex;
         ''', arguments: {'params': jsonEncode(params.toJson())});
     if (postBoxResult == null) {
@@ -107,7 +109,10 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   Future<ReconstructionDetails> reconstruct() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final reconstructionDetailsResult = await headlessWebView!.webViewController
-        .callAsyncJavaScript(functionBody: "window.reconstruct();");
+        .callAsyncJavaScript(functionBody: '''
+        const reconstructionDetails = await window.thresholdKey.reconstruct();
+        return JSON.stringify(reconstructionDetails);
+    ''');
     if (reconstructionDetailsResult == null) {
       throw Exception(kInvalidArgumentErr);
     }
@@ -125,61 +130,126 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<String> generateNewShare() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final index = await headlessWebView!.webViewController
-        .evaluateJavascript(source: "window.generateNewShare();");
-    return index;
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        const share = await window.thresholdKey.generateNewShare();
+        return share.newShareIndex.toString("hex");
+  ''');
+    if (result == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (result.error != null) {
+      throw Exception(result.error);
+    }
+    return result.value;
   }
 
   @override
   Future<KeyDetails> deleteShare(String index) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final keyDetailsResult = await headlessWebView!.webViewController
-        .evaluateJavascript(source: "window.deleteShare('$index');");
-    return keyDetailResultToJson(keyDetailsResult);
+        .callAsyncJavaScript(functionBody: '''
+        await window.thresholdKey.deleteShare(i);
+        return JSON.stringify(thresholdKey.getKeyDetails());
+      ''', arguments: {'i': index});
+    if (keyDetailsResult == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (keyDetailsResult.error != null) {
+      throw Exception(keyDetailsResult.error);
+    }
+
+    return keyDetailResultToJson(keyDetailsResult.value);
   }
 
   @override
   Future<void> inputShare(String share) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    await headlessWebView!.webViewController
-        .evaluateJavascript(source: "window.inputShare('$share');");
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        await window.thresholdKey.inputShare(i);
+      ''', arguments: {'i': share});
+    if (result?.error != null) {
+      throw Exception(result!.error);
+    }
   }
 
   @override
   Future<String> outputShare(String index) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    return await headlessWebView!.webViewController
-        .evaluateJavascript(source: "window.outputShare('$index');");
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        return await window.thresholdKey.outputShare(i);
+      ''', arguments: {'i': index});
+    if (result == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (result.error != null) {
+      throw Exception(result.error);
+    }
+    return result.value;
   }
 
   @override
   Future<List<String>> getSharesIndexes() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final data = await headlessWebView!.webViewController
-        .evaluateJavascript(source: "window.getSharesIndexes();");
-    return jsonDecode(data);
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        return await window.thresholdKey.getCurrentShareIndexes();
+      ''');
+    if (result == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (result.error != null) {
+      throw Exception(result.error);
+    }
+    return result.value;
   }
 
   @override
   Future<String> generateSecurityQuestion(
       String question, String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    return await headlessWebView!.webViewController.evaluateJavascript(
-        source: "window.generateSecurityQuestion('$question','$answer');");
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        const share = await window.thresholdKey.modules.securityQuestions.generateSecurityQuestion(a, q);
+        return share.newShareIndex.toString("hex");
+      ''', arguments: {'q': question, 'a': answer});
+    if (result == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (result.error != null) {
+      throw Exception(result.error);
+    }
+    return result.value;
   }
 
   @override
   Future<bool> changeSecurityQuestion(String question, String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    return await headlessWebView!.webViewController.evaluateJavascript(
-        source: "window.changeSecurityQuestion('$question','$answer');");
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        return await window.thresholdKey.modules.securityQuestions.changeSecurityQuestionAndAnswer(a, q);
+      ''', arguments: {'q': question, 'a': answer});
+    if (result == null) {
+      throw Exception(kInvalidArgumentErr);
+    }
+    if (result.error != null) {
+      throw Exception(result.error);
+    }
+    return result.value;
   }
 
   @override
   Future<bool> inputSecurityQuestionShare(String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    await headlessWebView!.webViewController.evaluateJavascript(
-        source: "window.inputSecurityQuestionShare('$answer');");
+    final result = await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        return await window.thresholdKey.modules.securityQuestions.inputShareFromSecurityQuestions(a);
+      ''', arguments: {'a': answer});
+    if (result?.error != null) {
+      throw Exception(result!.error);
+    }
     return true;
   }
 
@@ -189,12 +259,12 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     headlessWebView = null;
   }
 
-  Future<HeadlessInAppWebView> initJsEngine() async {
+  Future<HeadlessInAppWebView> initJsEngine(String initialUrl,
+      {InitProgressCallback? progressCallback}) async {
     Completer<InAppWebViewController> completer =
         Completer<InAppWebViewController>();
     final headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest:
-          URLRequest(url: Uri.tryParse('https://dev.web.gotok.app/tkey.html')),
+      initialUrlRequest: URLRequest(url: Uri.tryParse(initialUrl)),
       onWebViewCreated: (controller) {},
       onConsoleMessage: (controller, consoleMessage) {
         print(consoleMessage);

@@ -22,6 +22,7 @@ InitializeParams _$InitializeParamsFromJson(Map<String, dynamic> json) =>
       includeLocalMetadataTransitions:
           json['includeLocalMetadataTransitions'] as bool? ?? false,
       postBoxKey: json['postBoxKey'] as String?,
+      webInitialUrl: json['webInitialUrl'] as String?,
     );
 
 Map<String, dynamic> _$InitializeParamsToJson(InitializeParams instance) =>
@@ -38,6 +39,7 @@ Map<String, dynamic> _$InitializeParamsToJson(InitializeParams instance) =>
       'verifierId': instance.verifierId,
       'verifierName': instance.verifierName,
       'idToken': instance.idToken,
+      'webInitialUrl': instance.webInitialUrl,
       'chainConfig': instance.chainConfig,
     };
 

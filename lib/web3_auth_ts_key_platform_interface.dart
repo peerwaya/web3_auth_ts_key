@@ -6,6 +6,8 @@ import 'package:web3_auth_ts_key/native/browser.dart';
 
 import 'web3_auth_ts_key_method_channel.dart';
 
+typedef InitProgressCallback = Function(int progress);
+
 abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
   /// Constructs a Web3AuthTsKeyPlatform.
   Web3AuthTsKeyPlatform() : super(token: _token);
@@ -28,7 +30,8 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<void> init(InitializeParams params) {
+  Future<void> init(InitializeParams params,
+      {InitProgressCallback? progressCallback}) {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 

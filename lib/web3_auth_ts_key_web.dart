@@ -30,7 +30,8 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   }
 
   @override
-  Future<void> init(InitializeParams params) async {
+  Future<void> init(InitializeParams params,
+      {InitProgressCallback? progressCallback}) async {
     initParams = params;
     serviceProvider = ServiceProviderSfaWeb(
       ServiceProviderSfaWebOptions(

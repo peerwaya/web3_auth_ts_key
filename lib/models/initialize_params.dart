@@ -17,6 +17,7 @@ class InitializeParams {
   final String verifierId;
   final String verifierName;
   final String idToken;
+  final String? webInitialUrl;
   final ChainConfig chainConfig;
 
   InitializeParams({
@@ -32,6 +33,7 @@ class InitializeParams {
     this.neverInitializeNewKey = false,
     this.includeLocalMetadataTransitions = false,
     this.postBoxKey,
+    this.webInitialUrl,
   });
 
   factory InitializeParams.fromJson(Map<String, dynamic> json) =>

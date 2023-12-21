@@ -18,7 +18,8 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
   late InitializeParams params;
 
   @override
-  Future<void> init(InitializeParams params) async {
+  Future<void> init(InitializeParams params,
+      {InitProgressCallback? progressCallback}) async {
     this.params = params;
     await CustomAuth.init(
       network: params.network.toTorusNetworl(),

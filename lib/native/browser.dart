@@ -18,9 +18,46 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   Future<void> init(InitializeParams params) async {
     this.params = params;
     final webview = headlessWebView ?? await initJsEngine();
-    final result = await webview.webViewController.callAsyncJavaScript(
-        functionBody: "window.init('${jsonEncode(params.toJson())}');");
-    print("result: $result");
+    await webview.webViewController.callAsyncJavaScript(functionBody: '''
+          var initParams = JSON.parse(params);
+          const serviceProvider = new ServiceProviderSfa.SfaServiceProvider({
+            web3AuthOptions: {
+              clientId: initParams.web3AuthClientId,
+              enableLogging: initParams.enableLogging,
+              web3AuthNetwork: initParams.network,
+            },
+            postboxKey: initParams.postboxKey,
+            enableLogging: initParams.enableLogging,
+          });
+          const chainConfig = {
+            chainId: initParams.chainConfig.chainId,
+            rpcTarget: initParams.chainConfig.rpcTarget,
+            chainNamespace: initParams.chainConfig.chainNamespace,
+            blockExplorer: initParams.chainConfig.blockExplorer,
+            displayName: initParams.chainConfig.displayName,
+            ticker: initParams.chainConfig.ticker,
+            tickerName: initParams.chainConfig.tickerName,
+          };
+          window.thresholdKey = new Core.default({
+            enableLogging: true,
+            serviceProvider: serviceProvider,
+            storageLayer: new StorageLayerTorus.TorusStorageLayer({
+              hostUrl: "https://metadata.tor.us",
+              enableLogging: initParams.enableLogging,
+            }),
+            modules: {
+              securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
+              //shareSerialization: new ShareSerialization.ShareSerializationModule(),
+              //webStorage: new WebStorage.WebStorageModule(),
+            },
+          });
+          const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
+            config: {
+              chainConfig,
+            },
+          });
+          await serviceProvider.init(privateKeyProvider);
+''', arguments: {'params': jsonEncode(params.toJson())});
     headlessWebView = webview;
   }
 
@@ -28,7 +65,17 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   Future<String> getPostBoxKey() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final postBoxResult = await headlessWebView!.webViewController
-        .callAsyncJavaScript(functionBody: "window.getPostBoxKey();");
+        .callAsyncJavaScript(functionBody: '''
+            var initParams = JSON.parse(params);
+            const oauthShare = await window.thresholdKey.serviceProvider.connect({
+              verifier: initParams.verifierName,
+              verifierId: initParams.verifierId,
+              idToken: initParams.idToken,
+            });
+            const hex = await oauthShare.toString("hex");
+            console.log("hex ", hex);
+            return hex;
+        ''', arguments: {'params': jsonEncode(params.toJson())});
     if (postBoxResult == null) {
       throw Exception(kInvalidArgumentErr);
     }
@@ -42,7 +89,10 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   Future<KeyDetails> initializeTsKey([String? privateKey]) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final keyDetailsResult = await headlessWebView!.webViewController
-        .callAsyncJavaScript(functionBody: "window.initializeTsKey();");
+        .callAsyncJavaScript(functionBody: '''
+        await window.thresholdKey.initialize();
+        return JSON.stringify(window.thresholdKey.getKeyDetails());
+    ''');
     if (keyDetailsResult == null) {
       throw Exception(kInvalidArgumentErr);
     }
@@ -156,72 +206,47 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     await headlessWebView.run();
     await completer.future;
     await (Future.wait([
-      // rootBundle
-      //     .loadString("packages/web3_auth_ts_key/js/core.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle
-      //     .loadString(
-      //         "packages/web3_auth_ts_key/js/securityQuestions.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle
-      //     .loadString(
-      //         "packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle
-      //     .loadString("packages/web3_auth_ts_key/js/solanaProvider.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle
-      //     .loadString(
-      //         "packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle
-      //     .loadString("packages/web3_auth_ts_key/js/webStorage.umd.min.js")
-      //     .then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
-      // rootBundle.loadString("packages/web3_auth_ts_key/js/worker.js").then(
-      //       (script) => headlessWebView.webViewController
-      //           .evaluateJavascript(source: script),
-      //     ),
+      rootBundle
+          .loadString("packages/web3_auth_ts_key/js/core.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
+      rootBundle
+          .loadString(
+              "packages/web3_auth_ts_key/js/securityQuestions.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
+      rootBundle
+          .loadString(
+              "packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
+      rootBundle
+          .loadString("packages/web3_auth_ts_key/js/solanaProvider.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
+      rootBundle
+          .loadString(
+              "packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
+      rootBundle
+          .loadString("packages/web3_auth_ts_key/js/webStorage.umd.min.js")
+          .then(
+            (script) => headlessWebView.webViewController
+                .evaluateJavascript(source: script),
+          ),
     ]));
     return headlessWebView;
-  }
-
-  String getScript() {
-    return ''' 
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-      <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-      <script src="https://unpkg.com/@tkey-mpc/core@9.0.2/dist/core.umd.min.js"></script>
-      <script src="https://unpkg.com/@web3auth/solana-provider@7.2.0/dist/solanaProvider.umd.min.js"></script>
-      <script src="https://unpkg.com/@tkey-mpc/storage-layer-torus@9.0.2/dist/storageLayerTorus.umd.min.js"></script>
-      <script src="https://unpkg.com/@tkey-mpc/share-serialization@9.0.2/dist/shareSerialization.umd.min.js"></script>
-      <script src="https://unpkg.com/@tkey/web-storage@12.0.0/dist/webStorage.umd.min.js"></script>
-      <script src="https://unpkg.com/@tkey/security-questions@12.0.0/dist/securityQuestions.umd.min.js"></script>
-      <script src="https://unpkg.com/@tkey/service-provider-sfa@11.0.0/dist/serviceProviderSfa.umd.min.js"></script>
-    </head>
-    <body>
-    </body>
-  </html>
-  ''';
   }
 
   KeyDetails keyDetailResultToJson(String keyDetailsResult) {

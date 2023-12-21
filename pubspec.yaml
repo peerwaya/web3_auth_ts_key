@@ -2,7 +2,6 @@ name: web3_auth_ts_key
 description: "A new Flutter plugin project."
 version: 0.0.1
 homepage:
-publish_to: none
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -16,7 +15,7 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   json_annotation: ^4.8.1
   customauth_flutter:
-    path: "../customauth-flutter-sdk"
+    git: https://github.com/peerwaya/customauth-flutter-sdk
   js: ^0.6.3
   flutter_inappwebview: ^5.8.0
 

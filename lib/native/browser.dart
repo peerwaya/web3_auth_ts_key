@@ -269,6 +269,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
       onConsoleMessage: (controller, consoleMessage) {
         print(consoleMessage);
       },
+      onProgressChanged: (controller, progress) =>
+          progressCallback?.call(progress),
       onLoadStop: (controller, url) async {
         completer.complete(controller);
       },

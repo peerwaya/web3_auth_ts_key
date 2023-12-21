@@ -1,5 +1,7 @@
 package app.gotok.web3_auth_ts_key;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.web3auth.tkey.RuntimeError;
@@ -10,6 +12,7 @@ import com.web3auth.tkey.ThresholdKey.Modules.SecurityQuestionModule;
 import com.web3auth.tkey.ThresholdKey.ServiceProvider;
 import com.web3auth.tkey.ThresholdKey.StorageLayer;
 import com.web3auth.tkey.ThresholdKey.ThresholdKey;
+import com.web3auth.tkey.Version;
 
 import org.json.JSONException;
 
@@ -31,10 +34,15 @@ public class Web3AuthTsKeyPlugin implements FlutterPlugin, MethodCallHandler {
   /// when the Flutter Engine is detached from the Activity
   private MethodChannel channel;
   private ThresholdKey thresholdKey;
-  private StorageLayer storageLayer;
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+    System.loadLibrary("tkey-native");
+    try {
+      String libversion = Version.current();
+    } catch (RuntimeError e) {
+      throw new RuntimeException("Not able to load tkey-native", e);
+    }
     channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "web3_auth_ts_key");
     channel.setMethodCallHandler(this);
   }
@@ -48,19 +56,23 @@ public class Web3AuthTsKeyPlugin implements FlutterPlugin, MethodCallHandler {
         boolean manualSync = (Boolean) call.argument("manualSync");
         boolean neverInitializeNewKey = (Boolean) call.argument("neverInitializeNewKey");
         boolean includeLocalMetadataTransitions = (Boolean) call.argument("includeLocalMetadataTransitions");
-        StorageLayer storageLayer = new StorageLayer(false, "https://metadata.tor.us", 2);
-        ServiceProvider tkeyProvider = new ServiceProvider(false, postboxKey);
+        StorageLayer storageLayer = new StorageLayer(enableLogging, "https://metadata.tor.us", 2);
+        ServiceProvider tkeyProvider = new ServiceProvider(enableLogging, postboxKey);
         thresholdKey = new ThresholdKey(null, null, storageLayer, tkeyProvider, null, null, enableLogging, manualSync);
         thresholdKey.initialize(null, null, neverInitializeNewKey, includeLocalMetadataTransitions, keyDetailsResult -> {
           try {
             if (keyDetailsResult instanceof com.web3auth.tkey.ThresholdKey.Common.Result.Error) {
               Exception e = ((com.web3auth.tkey.ThresholdKey.Common.Result.Error<KeyDetails>) keyDetailsResult).exception;
+              Log.d("TKEY", "ERROR: " + e.getLocalizedMessage());
+              e.printStackTrace();
               result.error("THRESHOLD_KEY_INITIALIZE_FAILURE", e.getMessage(), null);
             } else if (keyDetailsResult instanceof com.web3auth.tkey.ThresholdKey.Common.Result.Success) {
               KeyDetails details = ((com.web3auth.tkey.ThresholdKey.Common.Result.Success<KeyDetails>) keyDetailsResult).data;
+              Log.d("TKEY", "GOT DETAILS: " + details);
               result.success(serializeKeyDetails(details));
             }
           }catch (RuntimeError | RuntimeException e) {
+            Log.d("TKEY", "RUNTIME ERROR: " + e.getLocalizedMessage());
             result.error("THRESHOLD_KEY_INITIALIZE_FAILURE", e.getMessage(), null);
           }
         });

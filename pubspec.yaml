@@ -2,6 +2,7 @@ name: web3_auth_ts_key
 description: "A new Flutter plugin project."
 version: 0.0.1
 homepage:
+publish_to: none
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -14,8 +15,10 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   json_annotation: ^4.8.1
-  customauth_flutter: ^3.1.0
+  customauth_flutter:
+    path: "../customauth-flutter-sdk"
   js: ^0.6.3
+  flutter_inappwebview: ^5.8.0
 
 dev_dependencies:
   flutter_test:
@@ -51,8 +54,17 @@ flutter:
         fileName: web3_auth_ts_key_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - packages/web3_auth_ts_key/js/worker.js
+    - packages/web3_auth_ts_key/js/core.umd.min.js
+    - packages/web3_auth_ts_key/js/securityQuestions.umd.min.js
+    - packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js
+    - packages/web3_auth_ts_key/js/shareSerialization.umd.min.js
+    - packages/web3_auth_ts_key/js/solanaProvider.umd.min.js
+    - packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js
+    - packages/web3_auth_ts_key/js/webStorage.umd.min.js
+    - packages/web3_auth_ts_key/js/worker.js
+    
   #   - images/a_dot_ham.jpeg
   #
   # For details regarding assets in packages, see

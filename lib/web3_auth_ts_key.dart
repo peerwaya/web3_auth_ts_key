@@ -4,9 +4,25 @@ import 'package:web3_auth_ts_key/models/reconstruction_details.dart';
 
 import 'web3_auth_ts_key_platform_interface.dart';
 
+export './models/chain_config.dart';
+export './models/custom_auth_params.dart';
+export './models/enums.dart';
+export './models/initialize_params.dart';
+export './models/key_details.dart';
+export './models/reconstruction_details.dart';
+export './models/threshold_params.dart';
+
 class Web3AuthTsKey {
-  Future<KeyDetails> initialize(InitializeParams params) async {
-    return Web3AuthTsKeyPlatform.instance.initialize(params);
+  Future<void> init(InitializeParams params) async {
+    return Web3AuthTsKeyPlatform.instance.init(params);
+  }
+
+  Future<String> getPostBoxKey() async {
+    return Web3AuthTsKeyPlatform.instance.getPostBoxKey();
+  }
+
+  Future<KeyDetails> initializeTsKey([String? privateKey]) async {
+    return Web3AuthTsKeyPlatform.instance.initializeTsKey(privateKey);
   }
 
   Future<ReconstructionDetails> reconstruct() async {
@@ -45,5 +61,9 @@ class Web3AuthTsKey {
 
   Future<bool> inputSecurityQuestionShare(String answer) {
     return Web3AuthTsKeyPlatform.instance.inputSecurityQuestionShare(answer);
+  }
+
+  Future<void> dispose() async {
+    return Web3AuthTsKeyPlatform.instance.dispose();
   }
 }

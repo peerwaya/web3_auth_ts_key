@@ -2,7 +2,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:web3_auth_ts_key/models/initialize_params.dart';
 import 'package:web3_auth_ts_key/models/key_details.dart';
 import 'package:web3_auth_ts_key/models/reconstruction_details.dart';
-import 'package:web3_auth_ts_key/models/threshold_params.dart';
+import 'package:web3_auth_ts_key/native/browser.dart';
 
 import 'web3_auth_ts_key_method_channel.dart';
 
@@ -12,7 +12,8 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static Web3AuthTsKeyPlatform _instance = MethodChannelWeb3AuthTsKey();
+  static Web3AuthTsKeyPlatform _instance = BrowserNative();
+  //static Web3AuthTsKeyPlatform _instance = MethodChannelWeb3AuthTsKey();
 
   /// The default instance of [Web3AuthTsKeyPlatform] to use.
   ///
@@ -27,7 +28,15 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Future<KeyDetails> initialize(InitializeParams params) {
+  Future<void> init(InitializeParams params) {
+    throw UnimplementedError('initialize() has not been implemented.');
+  }
+
+  Future<String> getPostBoxKey() {
+    throw UnimplementedError('initialize() has not been implemented.');
+  }
+
+  Future<KeyDetails> initializeTsKey([String? privateKey]) {
     throw UnimplementedError('initialize() has not been implemented.');
   }
 
@@ -68,5 +77,9 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
   Future<bool> inputSecurityQuestionShare(String answer) {
     throw UnimplementedError(
         'changeSecurityQuestion() has not been implemented.');
+  }
+
+  Future<void> dispose() {
+    throw UnimplementedError('dispose() has not been implemented.');
   }
 }

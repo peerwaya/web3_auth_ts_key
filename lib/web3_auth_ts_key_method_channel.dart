@@ -15,7 +15,11 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
   @visibleForTesting
   final methodChannel = const MethodChannel('web3_auth_ts_key');
 
-  Future<String> getTorusKey(InitializeParams params) async {
+  late InitializeParams params;
+
+  @override
+  Future<void> init(InitializeParams params) async {
+    this.params = params;
     await CustomAuth.init(
       network: params.network.toTorusNetworl(),
       browserRedirectUri:
@@ -23,6 +27,10 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
       redirectUri: Uri.parse('torus://org.torusresearch.sample/redirect'),
       // enableOneKey: true,
     );
+  }
+
+  @override
+  Future<String> getPostBoxKey() async {
     final credentials = await CustomAuth.getTorusKey(
       verifier: params.verifierName,
       verifierId: params.verifierId,
@@ -32,24 +40,31 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
   }
 
   @override
-  Future<KeyDetails> initialize(InitializeParams params) async {
-    final privateKey = await getTorusKey(params);
+  Future<KeyDetails> initializeTsKey([String? privateKey]) async {
+    final key = privateKey ?? await getPostBoxKey();
     final thresholdParams = ThresholdParams(
-        privateKey: privateKey,
+        privateKey: key,
         enableLogging: params.enableLogging,
         manualSync: params.manualSync,
         importShare: params.importShare,
         neverInitializeNewKey: params.neverInitializeNewKey,
         includeLocalMetadataTransitions:
             params.includeLocalMetadataTransitions);
-    return KeyDetails.fromJson(await methodChannel.invokeMethod(
-        'initialize', thresholdParams.toJson()));
+
+    return KeyDetails.fromJson(
+      asStringKeyedMap(
+        await methodChannel.invokeMethod(
+          'initialize',
+          thresholdParams.toJson(),
+        ),
+      ),
+    );
   }
 
   @override
   Future<ReconstructionDetails> reconstruct() async {
     return ReconstructionDetails.fromJson(
-        await methodChannel.invokeMethod('reconstruct'));
+        asStringKeyedMap(await methodChannel.invokeMethod('reconstruct')));
   }
 
   @override
@@ -58,8 +73,8 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
 
   @override
   Future<KeyDetails> deleteShare(String index) async {
-    return KeyDetails.fromJson(
-        await methodChannel.invokeMethod('generateNewShare', index));
+    return KeyDetails.fromJson(asStringKeyedMap(
+        await methodChannel.invokeMethod('generateNewShare', index)));
   }
 
   @override
@@ -95,4 +110,18 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
   @override
   Future<bool> inputSecurityQuestionShare(String answer) async =>
       await methodChannel.invokeMethod('inputSecurityQuestionShare', answer);
+
+  @override
+  Future<void> dispose() async {
+    return;
+  }
+
+  Map<String, dynamic> asStringKeyedMap(Map<dynamic, dynamic> map) {
+    //if (map == null) return null;
+    if (map is Map<String, dynamic>) {
+      return map;
+    } else {
+      return Map<String, dynamic>.from(map);
+    }
+  }
 }

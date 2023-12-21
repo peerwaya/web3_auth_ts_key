@@ -3,7 +3,6 @@
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:convert';
-import 'dart:html' as html show window;
 
 import 'package:js/js_util.dart' as js_util;
 
@@ -20,6 +19,10 @@ import 'web3_auth_ts_key_platform_interface.dart';
 class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   /// Constructs a Web3AuthTsKeyWeb
   late ThresholdKeyWeb thresholdKeyWeb;
+  late ServiceProviderSfaWeb serviceProvider;
+  late ChainConfigWeb chainConfigWeb;
+  late InitializeParams initParams;
+
   Web3AuthTsKeyWeb();
 
   static void registerWith(Registrar registrar) {
@@ -27,46 +30,65 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   }
 
   @override
-  Future<KeyDetails> initialize(InitializeParams params) async {
-    final serviceProvider = ServiceProviderSfaWeb(
+  Future<void> init(InitializeParams params) async {
+    initParams = params;
+    serviceProvider = ServiceProviderSfaWeb(
       ServiceProviderSfaWebOptions(
-        clientId: params.web3AuthClientId,
         enableLogging: params.enableLogging,
-        web3AuthNetwork: params.network.name,
+        postboxKey: params.postBoxKey,
+        web3AuthOptions: Web3AuthOptionsWeb(
+          clientId: params.web3AuthClientId,
+          enableLogging: params.enableLogging,
+          web3AuthNetwork: params.network.name,
+        ),
       ),
     );
-    final chainConfigWeb = ChainConfigWeb(
-        chainId: params.chainConfig.chainId,
-        rpcTarget: params.chainConfig.rpcTarget,
-        chainNamespace: params.chainConfig.chainNamespace,
-        blockExplorer: params.chainConfig.blockExplorer,
-        displayName: params.chainConfig.displayName,
-        ticker: params.chainConfig.ticker,
-        tickerName: params.chainConfig.tickerName);
+
+    chainConfigWeb = params.chainConfig.toChainConfigWeb();
+    thresholdKeyWeb = ThresholdKeyWeb(
+      ThresholdKeyWebOptions(
+        enableLogging: params.enableLogging,
+        serviceProvider: serviceProvider,
+        manualSync: params.manualSync,
+        storageLayer: StorageLayerWeb(
+          StorageLayerWebOptions(
+            hostUrl: 'https://metadata.tor.us',
+            enableLogging: params.enableLogging,
+          ),
+        ),
+        modules: ModulesWeb(
+          securityQuestions: SecurityQuestionsModuleWeb(),
+          //shareSerialization: ShareSerializationModuleWeb(),
+        ),
+      ),
+    );
+
     final privateKeyProvider = SolanaPrivateKeyProviderWeb(
       SolanaPrivateKeyProviderOptions(
         config: SolanaPrivKeyProviderConfig(chainConfig: chainConfigWeb),
       ),
     );
-    thresholdKeyWeb = ThresholdKeyWeb(
-      ThresholdKeyWebOptions(
-        enableLogging: params.enableLogging,
-        serviceProvider: serviceProvider,
-      ),
-    );
+    await js_util.promiseToFuture(serviceProvider.init(privateKeyProvider));
+  }
 
-    await js_util.promiseToFuture(
-        thresholdKeyWeb.serviceProvider.init(privateKeyProvider));
+  @override
+  Future<String> getPostBoxKey() async {
+    print("verifier: ${initParams.verifierName}");
+    print("verifierId: ${initParams.verifierId}");
     final oauthShare = await js_util.promiseToFuture<BN>(
       thresholdKeyWeb.serviceProvider.connect(
         SfaWebConnectOptions(
-          verifier: params.verifierName,
-          verifierId: params.verifierId,
-          idToken: params.idToken,
+          verifier: initParams.verifierName,
+          verifierId: initParams.verifierId,
+          idToken: initParams.idToken,
         ),
       ),
     );
-    print("oauthShare: ${oauthShare.toString("hex")}");
+    return oauthShare.toString("hex");
+  }
+
+  @override
+  Future<KeyDetails> initializeTsKey([String? privateKey]) async {
     await js_util.promiseToFuture(
       thresholdKeyWeb.initialize(),
     );
@@ -152,5 +174,10 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
       totalShares: keyDetailsWeb.totalShares,
       shareDescriptions: shareDescriptionsJson,
     );
+  }
+
+  @override
+  Future<void> dispose() async {
+    return;
   }
 }

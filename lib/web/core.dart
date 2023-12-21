@@ -1,4 +1,5 @@
 import 'package:js/js.dart';
+import 'package:web3_auth_ts_key/models/chain_config.dart';
 import 'package:web3_auth_ts_key/models/key_details.dart';
 import 'package:web3_auth_ts_key/models/reconstruction_details.dart';
 
@@ -83,9 +84,22 @@ class WebStorageModuleWeb {
 @anonymous
 class ServiceProviderSfaWebOptions {
   external String get clientId;
-  external String get web3AuthNetwork;
+  external String? get postboxKey;
   external bool get enableLogging;
   external factory ServiceProviderSfaWebOptions({
+    Web3AuthOptionsWeb web3AuthOptions,
+    String? postboxKey,
+    bool enableLogging,
+  });
+}
+
+@JS()
+@anonymous
+class Web3AuthOptionsWeb {
+  external String get clientId;
+  external String get web3AuthNetwork;
+  external bool get enableLogging;
+  external factory Web3AuthOptionsWeb({
     String clientId,
     String web3AuthNetwork,
     bool enableLogging,
@@ -132,12 +146,14 @@ class ThresholdKeyWebOptions {
   external StorageLayerWeb get storageLayer;
   external ModulesWeb get modules;
   external bool get manualSync;
+  external bool get serverTimeOffset;
   external factory ThresholdKeyWebOptions({
     bool enableLogging,
     ServiceProviderSfaWeb serviceProvider,
     StorageLayerWeb storageLayer,
     bool manualSync,
     ModulesWeb modules,
+    num? serverTimeOffset,
   });
 }
 
@@ -281,4 +297,18 @@ class GenerateNewShareResultWeb {
     BN newShareIndex,
   });
   external BN get newShareIndex;
+}
+
+extension ChainConfigWebExt on ChainConfig {
+  ChainConfigWeb toChainConfigWeb() {
+    return ChainConfigWeb(
+      chainId: chainId,
+      rpcTarget: rpcTarget,
+      chainNamespace: chainNamespace,
+      blockExplorer: blockExplorer,
+      displayName: displayName,
+      ticker: ticker,
+      tickerName: tickerName,
+    );
+  }
 }

@@ -27,7 +27,7 @@ public class Web3AuthTsKeyPlugin: NSObject, FlutterPlugin {
                 let enableLogging = args["enableLogging"] as? Bool,
                 let manualSync = args["manualSync"] as? Bool,
                 let neverInitializeNewKey = args["neverInitializeNewKey"] as? Bool,
-                let importShare = args["importShare"] as? Bool
+                let includeLocalMetadataTransitions = args["includeLocalMetadataTransitions"] as? Bool
               else {
                   result(FlutterError(
                     code: "THRESHOLD_KEY_INITIALIZE_FAILURE",
@@ -35,7 +35,7 @@ public class Web3AuthTsKeyPlugin: NSObject, FlutterPlugin {
                     details: nil))
                   return
               }
-              guard let storage_layer = try? StorageLayer(enable_logging: true, host_url: "https://metadata.tor.us", server_time_offset: 2) else {
+              guard let storage_layer = try? StorageLayer(enable_logging: enableLogging, host_url: "https://metadata.tor.us", server_time_offset: 2) else {
                   result(FlutterError(
                     code: "THRESHOLD_KEY_INITIALIZE_FAILURE",
                     message: "Failed to create storage layer",
@@ -43,7 +43,7 @@ public class Web3AuthTsKeyPlugin: NSObject, FlutterPlugin {
                   return
               }
               
-              guard let service_provider = try? ServiceProvider(enable_logging: true, postbox_key: postboxkey) else {
+              guard let service_provider = try? ServiceProvider(enable_logging: enableLogging, postbox_key: postboxkey) else {
                   result(FlutterError(
                     code: "THRESHOLD_KEY_INITIALIZE_FAILURE",
                     message: "Failed to create storage layer",
@@ -63,14 +63,30 @@ public class Web3AuthTsKeyPlugin: NSObject, FlutterPlugin {
               }
               
               threshold_key = thresholdKey
-              guard let key_details = try? await thresholdKey.initialize(never_initialize_new_key: neverInitializeNewKey, include_local_metadata_transitions: false) else {
+              print("postboxkey = \(postboxkey)")
+              print("threshold_key = \(String(describing: threshold_key))")
+              print("manualSync = \(manualSync)")
+              print("never_initialize_new_key = \(neverInitializeNewKey)")
+              print("include_local_metadata_transitions = \(includeLocalMetadataTransitions)")
+              do {
+                  let key_details = try await threshold_key.initialize(never_initialize_new_key: neverInitializeNewKey, include_local_metadata_transitions: includeLocalMetadataTransitions)
+                  result(serializeKeyDetailsToDict(key_details))
+              } catch {
+                  print("An error occurred: \(error)")
                   result(FlutterError(
                     code: "THRESHOLD_KEY_INITIALIZE_FAILURE",
                     message: "Failed to get key details",
                     details: nil))
                   return
               }
-              result(serializeKeyDetailsToDict(key_details))
+//              guard let key_details = try? await threshold_key.initialize(never_initialize_new_key: neverInitializeNewKey, include_local_metadata_transitions: false) else {
+//                  result(FlutterError(
+//                    code: "THRESHOLD_KEY_INITIALIZE_FAILURE",
+//                    message: "Failed to get key details",
+//                    details: nil))
+//                  return
+//              }
+//              result(serializeKeyDetailsToDict(key_details))
           case "reconstruct":
               guard let reconstruction_details = try? await threshold_key?.reconstruct() else {
                   result(FlutterError(

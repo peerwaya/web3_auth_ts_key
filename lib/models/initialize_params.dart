@@ -1,7 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
 import 'package:web3_auth_ts_key/models/chain_config.dart';
 import 'package:web3_auth_ts_key/models/enums.dart';
 
+part 'initialize_params.g.dart';
+
+@JsonSerializable()
 class InitializeParams {
+  final String? postBoxKey;
   final bool enableLogging;
   final bool manualSync;
   final bool importShare;
@@ -26,5 +31,11 @@ class InitializeParams {
     this.importShare = false,
     this.neverInitializeNewKey = false,
     this.includeLocalMetadataTransitions = false,
+    this.postBoxKey,
   });
+
+  factory InitializeParams.fromJson(Map<String, dynamic> json) =>
+      _$InitializeParamsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$InitializeParamsToJson(this);
 }

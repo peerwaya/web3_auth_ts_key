@@ -59,6 +59,7 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
         ),
         modules: ModulesWeb(
           securityQuestions: SecurityQuestionsModuleWeb(),
+          webStorage: WebStorageModuleWeb(),
           //shareSerialization: ShareSerializationModuleWeb(),
         ),
       ),
@@ -74,8 +75,6 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
 
   @override
   Future<String> getPostBoxKey() async {
-    print("verifier: ${initParams.verifierName}");
-    print("verifierId: ${initParams.verifierId}");
     final oauthShare = await js_util.promiseToFuture<BN>(
       thresholdKeyWeb.serviceProvider.connect(
         SfaWebConnectOptions(

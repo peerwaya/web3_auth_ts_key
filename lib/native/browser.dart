@@ -51,7 +51,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
               //shareSerialization: new ShareSerialization.ShareSerializationModule(),
-              //webStorage: new WebStorage.WebStorageModule(),
+              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
@@ -101,7 +101,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     if (keyDetailsResult.error != null) {
       throw Exception(keyDetailsResult.error);
     }
-    print(keyDetailsResult);
     return keyDetailResultToJson(keyDetailsResult.value);
   }
 

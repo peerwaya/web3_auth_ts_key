@@ -109,7 +109,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final reconstructionDetailsResult = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
-        const reconstructionDetails = await window.thresholdKey.reconstruct();
+        const reconstructionDetails = await window.thresholdKey.reconstructKey();
         return JSON.stringify(reconstructionDetails);
     ''');
     if (reconstructionDetailsResult == null) {
@@ -202,7 +202,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     if (result.error != null) {
       throw Exception(result.error);
     }
-    return result.value;
+    return result.value.cast<String>();
   }
 
   @override

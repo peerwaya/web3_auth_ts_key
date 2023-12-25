@@ -51,7 +51,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
-              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
@@ -309,12 +308,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
       rootBundle
           .loadString(
               "packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-      rootBundle
-          .loadString("packages/web3_auth_ts_key/js/webStorage.umd.min.js")
           .then(
             (script) => headlessWebView.webViewController
                 .evaluateJavascript(source: script),

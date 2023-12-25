@@ -59,7 +59,7 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
         ),
         modules: ModulesWeb(
           securityQuestions: SecurityQuestionsModuleWeb(),
-          webStorage: WebStorageModuleWeb(),
+          // webStorage: WebStorageModuleWeb(),
           //shareSerialization: ShareSerializationModuleWeb(),
         ),
       ),

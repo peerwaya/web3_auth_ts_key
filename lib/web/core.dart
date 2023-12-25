@@ -167,11 +167,11 @@ class ThresholdKeyWeb {
   external KeyDetailsWeb getKeyDetails();
   external Future<ReconstructedKeyResultWeb> reconstructKey(
       [bool? reconstructKeyMiddleware]);
-  external Future<GenerateNewShareResultWeb> generateNewShare();
-  external Future<dynamic> deleteShare(String index);
-  external Future<void> inputShare(String share, [String? type]);
-  external Future<String> outputShare(String shareIndex, [String? type]);
-  external List<String> getCurrentShareIndexes();
+  external dynamic generateNewShare();
+  external dynamic deleteShare(String index);
+  external dynamic inputShare(String share, [String? type]);
+  external dynamic outputShare(String shareIndex, [String? type]);
+  external List<dynamic> getCurrentShareIndexes();
 }
 
 enum ChainNameSpaces { eip155, solana, other }
@@ -311,4 +311,20 @@ extension ChainConfigWebExt on ChainConfig {
       tickerName: tickerName,
     );
   }
+}
+
+@JS()
+@anonymous
+class ShareStoreWeb {
+  external factory ShareStoreWeb();
+  external ShareWeb get share;
+  external String toJSON();
+  external static ShareStoreWeb fromJSON(String shareStore);
+}
+
+@JS()
+@anonymous
+class ShareWeb {
+  external factory ShareWeb();
+  external BN get share;
 }

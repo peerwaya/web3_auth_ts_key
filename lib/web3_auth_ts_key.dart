@@ -54,7 +54,7 @@ class Web3AuthTsKey {
         .generateSecurityQuestion(question, answer);
   }
 
-  Future<bool> changeSecurityQuestion(String question, String answer) {
+  Future<void> changeSecurityQuestion(String question, String answer) {
     return Web3AuthTsKeyPlatform.instance
         .changeSecurityQuestion(question, answer);
   }

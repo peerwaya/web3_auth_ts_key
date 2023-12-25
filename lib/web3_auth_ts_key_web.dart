@@ -123,13 +123,15 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
 
   @override
   Future<String> outputShare(String index) async {
-    return await js_util
-        .promiseToFuture<String>(thresholdKeyWeb.outputShare(index));
+    final share =
+        await js_util.promiseToFuture<BN>(thresholdKeyWeb.outputShare(index));
+    return share.toString('hex');
   }
 
   @override
   Future<List<String>> getSharesIndexes() async {
-    return thresholdKeyWeb.getCurrentShareIndexes();
+    final shares = thresholdKeyWeb.getCurrentShareIndexes();
+    return shares.cast<String>();
   }
 
   @override
@@ -142,11 +144,11 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   }
 
   @override
-  Future<bool> changeSecurityQuestion(String question, String answer) async {
-    final result = await js_util.promiseToFuture<bool>(thresholdKeyWeb
+  Future<void> changeSecurityQuestion(String question, String answer) async {
+    await js_util.promiseToFuture<bool>(thresholdKeyWeb
         .modules.securityQuestions
         .changeSecurityQuestionAndAnswer(answer, question));
-    return result;
+    return;
   }
 
   @override

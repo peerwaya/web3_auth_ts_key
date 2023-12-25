@@ -72,7 +72,7 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
         'generateSecurityQuestion() has not been implemented.');
   }
 
-  Future<bool> changeSecurityQuestion(String question, String answer) {
+  Future<void> changeSecurityQuestion(String question, String answer) {
     throw UnimplementedError(
         'changeSecurityQuestion() has not been implemented.');
   }

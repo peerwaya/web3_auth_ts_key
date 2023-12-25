@@ -101,7 +101,7 @@ class MethodChannelWeb3AuthTsKey extends Web3AuthTsKeyPlatform {
       });
 
   @override
-  Future<bool> changeSecurityQuestion(String question, String answer) async =>
+  Future<void> changeSecurityQuestion(String question, String answer) async =>
       await methodChannel
           .invokeMethod('changeSecurityQuestion', <String, dynamic>{
         'question': question,

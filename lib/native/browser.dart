@@ -44,13 +44,13 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
           window.thresholdKey = new Core.default({
             enableLogging: true,
             serviceProvider: serviceProvider,
+            manualSync: initParams.manualSync,
             storageLayer: new StorageLayerTorus.TorusStorageLayer({
               hostUrl: "https://metadata.tor.us",
               enableLogging: initParams.enableLogging,
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
-              //shareSerialization: new ShareSerialization.ShareSerializationModule(),
               webStorage: new WebStorage.WebStorageModule(),
             },
           });
@@ -120,9 +120,15 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     }
     final data = jsonDecode(reconstructionDetailsResult.value);
     return ReconstructionDetails(
-      key: data['key'],
-      allKeys: data['allKeys'],
-      seedPhrase: data['seedPhrase'],
+      key: data['privKey'],
+      allKeys: (data['allKeys'] as List<dynamic>?)
+              ?.map((d) => d as String)
+              .toList() ??
+          [],
+      seedPhrase: (data['seedPhrase'] as List<dynamic>?)
+              ?.map((d) => d as String)
+              .toList() ??
+          [],
     );
   }
 
@@ -178,7 +184,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final result = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
-        return await window.thresholdKey.outputShare(i);
+        const share = await window.thresholdKey.outputShare(i);
+        return share.toString('hex');
       ''', arguments: {'i': index});
     if (result == null) {
       throw Exception(kInvalidArgumentErr);
@@ -186,6 +193,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     if (result.error != null) {
       throw Exception(result.error);
     }
+    print("Output Share: share: ${result.value}");
     return result.value;
   }
 
@@ -211,7 +219,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final result = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
-        const share = await window.thresholdKey.modules.securityQuestions.generateSecurityQuestion(a, q);
+        const share = await window.thresholdKey.modules.securityQuestions.generateNewShareWithSecurityQuestions(a, q);
         return share.newShareIndex.toString("hex");
       ''', arguments: {'q': question, 'a': answer});
     if (result == null) {
@@ -224,19 +232,12 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   }
 
   @override
-  Future<bool> changeSecurityQuestion(String question, String answer) async {
+  Future<void> changeSecurityQuestion(String question, String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
         return await window.thresholdKey.modules.securityQuestions.changeSecurityQuestionAndAnswer(a, q);
       ''', arguments: {'q': question, 'a': answer});
-    if (result == null) {
-      throw Exception(kInvalidArgumentErr);
-    }
-    if (result.error != null) {
-      throw Exception(result.error);
-    }
-    return result.value;
   }
 
   @override
@@ -273,6 +274,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
       onLoadStop: (controller, url) async {
         completer.complete(controller);
       },
+      onLoadError: (controller, url, code, message) =>
+          completer.completeError(Exception('$code:$message')),
     );
     await headlessWebView.run();
     await completer.future;

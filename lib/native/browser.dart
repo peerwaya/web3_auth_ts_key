@@ -20,7 +20,9 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     this.params = params;
     final webview = headlessWebView ??
         await initJsEngine(
-            params.webInitialUrl ?? 'https://dev.web.gotok.app/tkey.html');
+          params.webInitialUrl ?? 'https://dev.web.gotok.app/tkey.html',
+          progressCallback: progressCallback,
+        );
     await webview.webViewController.callAsyncJavaScript(functionBody: '''
           var initParams = JSON.parse(params);
           const serviceProvider = new ServiceProviderSfa.SfaServiceProvider({

@@ -13,8 +13,10 @@ export './models/reconstruction_details.dart';
 export './models/threshold_params.dart';
 
 class Web3AuthTsKey {
-  Future<void> init(InitializeParams params) async {
-    return Web3AuthTsKeyPlatform.instance.init(params);
+  Future<void> init(InitializeParams params,
+      {InitProgressCallback? progressCallback}) async {
+    return Web3AuthTsKeyPlatform.instance
+        .init(params, progressCallback: progressCallback);
   }
 
   Future<String> getPostBoxKey() async {

@@ -192,7 +192,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     if (result.error != null) {
       throw Exception(result.error);
     }
-    print("Output Share: share: ${result.value}");
     return result.value;
   }
 

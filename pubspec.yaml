@@ -48,16 +48,16 @@ flutter:
         fileName: web3_auth_ts_key_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
-  assets:
-    - packages/web3_auth_ts_key/js/worker.js
-    - packages/web3_auth_ts_key/js/core.umd.min.js
-    - packages/web3_auth_ts_key/js/securityQuestions.umd.min.js
-    - packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js
-    - packages/web3_auth_ts_key/js/shareSerialization.umd.min.js
-    - packages/web3_auth_ts_key/js/solanaProvider.umd.min.js
-    - packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js
-    - packages/web3_auth_ts_key/js/webStorage.umd.min.js
-    - packages/web3_auth_ts_key/js/worker.js
+  # assets:
+  #   - packages/web3_auth_ts_key/js/worker.js
+  #   - packages/web3_auth_ts_key/js/core.umd.min.js
+  #   - packages/web3_auth_ts_key/js/securityQuestions.umd.min.js
+  #   - packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js
+  #   - packages/web3_auth_ts_key/js/shareSerialization.umd.min.js
+  #   - packages/web3_auth_ts_key/js/solanaProvider.umd.min.js
+  #   - packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js
+  #   - packages/web3_auth_ts_key/js/webStorage.umd.min.js
+  #   - packages/web3_auth_ts_key/js/worker.js
     
   #   - images/a_dot_ham.jpeg
   #

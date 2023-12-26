@@ -14,8 +14,6 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   json_annotation: ^4.8.1
-  customauth_flutter:
-    git: https://github.com/peerwaya/customauth-flutter-sdk
   js: ^0.6.3
   flutter_inappwebview: ^5.8.0
 

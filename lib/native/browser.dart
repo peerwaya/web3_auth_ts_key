@@ -279,41 +279,41 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     );
     await headlessWebView.run();
     await completer.future;
-    await (Future.wait([
-      rootBundle
-          .loadString("packages/web3_auth_ts_key/js/core.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-      rootBundle
-          .loadString(
-              "packages/web3_auth_ts_key/js/securityQuestions.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-      rootBundle
-          .loadString(
-              "packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-      rootBundle
-          .loadString("packages/web3_auth_ts_key/js/solanaProvider.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-      rootBundle
-          .loadString(
-              "packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js")
-          .then(
-            (script) => headlessWebView.webViewController
-                .evaluateJavascript(source: script),
-          ),
-    ]));
+    // await (Future.wait([
+    //   rootBundle
+    //       .loadString("packages/web3_auth_ts_key/js/core.umd.min.js")
+    //       .then(
+    //         (script) => headlessWebView.webViewController
+    //             .evaluateJavascript(source: script),
+    //       ),
+    //   rootBundle
+    //       .loadString(
+    //           "packages/web3_auth_ts_key/js/securityQuestions.umd.min.js")
+    //       .then(
+    //         (script) => headlessWebView.webViewController
+    //             .evaluateJavascript(source: script),
+    //       ),
+    //   rootBundle
+    //       .loadString(
+    //           "packages/web3_auth_ts_key/js/serviceProviderSfa.umd.min.js")
+    //       .then(
+    //         (script) => headlessWebView.webViewController
+    //             .evaluateJavascript(source: script),
+    //       ),
+    //   rootBundle
+    //       .loadString("packages/web3_auth_ts_key/js/solanaProvider.umd.min.js")
+    //       .then(
+    //         (script) => headlessWebView.webViewController
+    //             .evaluateJavascript(source: script),
+    //       ),
+    //   rootBundle
+    //       .loadString(
+    //           "packages/web3_auth_ts_key/js/storageLayerTorus.umd.min.js")
+    //       .then(
+    //         (script) => headlessWebView.webViewController
+    //             .evaluateJavascript(source: script),
+    //       ),
+    // ]));
     return headlessWebView;
   }
 

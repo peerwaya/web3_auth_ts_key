@@ -157,13 +157,22 @@ class ThresholdKeyWebOptions {
   });
 }
 
+@JS()
+@anonymous
+class InitializeThresholdKeyWebOptions {
+  external bool? get neverInitializeNewKey;
+  external factory InitializeThresholdKeyWebOptions({
+    bool? neverInitializeNewKey,
+  });
+}
+
 @JS('Core.default')
 class ThresholdKeyWeb {
   external ServiceProviderSfaWeb get serviceProvider;
   external StorageLayerWeb get storageLayer;
   external ModulesWeb get modules;
   external factory ThresholdKeyWeb(ThresholdKeyWebOptions options);
-  external dynamic initialize();
+  external dynamic initialize([InitializeThresholdKeyWebOptions? options]);
   external KeyDetailsWeb getKeyDetails();
   external Future<ReconstructedKeyResultWeb> reconstructKey(
       [bool? reconstructKeyMiddleware]);

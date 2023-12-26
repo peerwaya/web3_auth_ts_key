@@ -90,7 +90,11 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   @override
   Future<KeyDetails> initializeTsKey([String? privateKey]) async {
     await js_util.promiseToFuture(
-      thresholdKeyWeb.initialize(),
+      thresholdKeyWeb.initialize(
+        InitializeThresholdKeyWebOptions(
+          neverInitializeNewKey: initParams.neverInitializeNewKey,
+        ),
+      ),
     );
     return thresholdKeyWeb.getKeyDetails().toKeyDetails();
   }

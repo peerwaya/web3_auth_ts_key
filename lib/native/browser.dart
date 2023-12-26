@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:web3_auth_ts_key/web3_auth_ts_key.dart';
 import 'package:web3_auth_ts_key/web3_auth_ts_key_platform_interface.dart';
@@ -93,9 +92,12 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     assert(headlessWebView != null, kDefaultUninitializedError);
     final keyDetailsResult = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
-        await window.thresholdKey.initialize();
+        var initParams = JSON.parse(params);
+        await window.thresholdKey.initialize({
+          neverInitializeNewKey: initParams.neverInitializeNewKey
+        });
         return JSON.stringify(window.thresholdKey.getKeyDetails());
-    ''');
+    ''', arguments: {'params': jsonEncode(params.toJson())});
     if (keyDetailsResult == null) {
       throw Exception(kInvalidArgumentErr);
     }

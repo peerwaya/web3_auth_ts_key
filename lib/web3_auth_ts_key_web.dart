@@ -149,8 +149,7 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
 
   @override
   Future<void> changeSecurityQuestion(String question, String answer) async {
-    await js_util.promiseToFuture<bool>(thresholdKeyWeb
-        .modules.securityQuestions
+    await js_util.promiseToFuture(thresholdKeyWeb.modules.securityQuestions
         .changeSecurityQuestionAndAnswer(answer, question));
     return;
   }

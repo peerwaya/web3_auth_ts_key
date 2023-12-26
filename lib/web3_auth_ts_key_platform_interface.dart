@@ -4,7 +4,7 @@ import 'package:web3_auth_ts_key/models/key_details.dart';
 import 'package:web3_auth_ts_key/models/reconstruction_details.dart';
 import 'package:web3_auth_ts_key/native/browser.dart';
 
-import 'web3_auth_ts_key_method_channel.dart';
+//import 'web3_auth_ts_key_method_channel.dart';
 
 typedef InitProgressCallback = Function(int progress);
 

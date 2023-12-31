@@ -23,6 +23,7 @@ InitializeParams _$InitializeParamsFromJson(Map<String, dynamic> json) =>
           json['includeLocalMetadataTransitions'] as bool? ?? false,
       postBoxKey: json['postBoxKey'] as String?,
       webInitialUrl: json['webInitialUrl'] as String?,
+      importKey: json['importKey'] as String?,
     );
 
 Map<String, dynamic> _$InitializeParamsToJson(InitializeParams instance) =>
@@ -31,6 +32,7 @@ Map<String, dynamic> _$InitializeParamsToJson(InitializeParams instance) =>
       'enableLogging': instance.enableLogging,
       'manualSync': instance.manualSync,
       'importShare': instance.importShare,
+      'importKey': instance.importKey,
       'neverInitializeNewKey': instance.neverInitializeNewKey,
       'includeLocalMetadataTransitions':
           instance.includeLocalMetadataTransitions,
@@ -48,4 +50,6 @@ const _$NetworkEnumMap = {
   Network.testnet: 'testnet',
   Network.cyan: 'cyan',
   Network.aqua: 'aqua',
+  Network.sapphire_devnet: 'sapphire_devnet',
+  Network.sapphire_mainnet: 'sapphire_mainnet',
 };

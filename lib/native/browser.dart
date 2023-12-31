@@ -93,12 +93,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     final keyDetailsResult = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
         var initParams = JSON.parse(params);
-        console.log("neverInitializeNewKey", initParams.neverInitializeNewKey);
-        console.log("initParams.importKey", initParams.importKey);
-        console.log("importKey BN", (new BN(initParams.importKey, 16)).toString(hex));
         await window.thresholdKey.initialize({
           neverInitializeNewKey: initParams.neverInitializeNewKey,
-          importKey: initParams.importKey && new BN(initParams.importKey, 16)
         });
         return JSON.stringify(window.thresholdKey.getKeyDetails());
     ''', arguments: {'params': jsonEncode(params.toJson())});

@@ -207,9 +207,9 @@ class ChainConfigWeb {
   });
 }
 
-@JS('BN')
+@JS()
+@anonymous
 class BN {
-  external factory BN(String data, [int base]);
   @override
   external String toString([String? str]);
 }

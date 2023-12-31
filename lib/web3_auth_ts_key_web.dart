@@ -93,9 +93,6 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
       thresholdKeyWeb.initialize(
         InitializeThresholdKeyWebOptions(
           neverInitializeNewKey: initParams.neverInitializeNewKey,
-          importKey: initParams.importKey != null
-              ? BN(initParams.importKey!, 16)
-              : null,
         ),
       ),
     );

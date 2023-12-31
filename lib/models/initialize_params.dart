@@ -10,6 +10,7 @@ class InitializeParams {
   final bool enableLogging;
   final bool manualSync;
   final bool importShare;
+  final String? importKey;
   final bool neverInitializeNewKey;
   final bool includeLocalMetadataTransitions;
   final Network network;
@@ -34,6 +35,7 @@ class InitializeParams {
     this.includeLocalMetadataTransitions = false,
     this.postBoxKey,
     this.webInitialUrl,
+    this.importKey,
   });
 
   factory InitializeParams.fromJson(Map<String, dynamic> json) =>

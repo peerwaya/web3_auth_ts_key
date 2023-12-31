@@ -163,6 +163,7 @@ class InitializeThresholdKeyWebOptions {
   external bool? get neverInitializeNewKey;
   external factory InitializeThresholdKeyWebOptions({
     bool? neverInitializeNewKey,
+    BN? importKey,
   });
 }
 
@@ -206,9 +207,9 @@ class ChainConfigWeb {
   });
 }
 
-@JS()
-@anonymous
+@JS('BN')
 class BN {
+  external factory BN(String data, [int base]);
   @override
   external String toString([String? str]);
 }

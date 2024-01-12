@@ -53,7 +53,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
-              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({

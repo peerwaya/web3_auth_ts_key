@@ -85,4 +85,13 @@ abstract class Web3AuthTsKeyPlatform extends PlatformInterface {
   Future<void> dispose() {
     throw UnimplementedError('dispose() has not been implemented.');
   }
+
+  Future<void> deleteTkey() {
+    throw UnimplementedError('deleteTkey() has not been implemented.');
+  }
+
+  Future<void> syncLocalMetadataTransitions() {
+    throw UnimplementedError(
+        'syncLocalMetadataTransitions() has not been implemented.');
+  }
 }

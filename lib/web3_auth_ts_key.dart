@@ -65,6 +65,14 @@ class Web3AuthTsKey {
     return Web3AuthTsKeyPlatform.instance.inputSecurityQuestionShare(answer);
   }
 
+  Future<void> deleteTkey() {
+    return Web3AuthTsKeyPlatform.instance.deleteTkey();
+  }
+
+  Future<void> syncLocalMetadataTransitions() {
+    return Web3AuthTsKeyPlatform.instance.syncLocalMetadataTransitions();
+  }
+
   Future<void> dispose() async {
     return Web3AuthTsKeyPlatform.instance.dispose();
   }

@@ -262,6 +262,24 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     headlessWebView = null;
   }
 
+  @override
+  Future<void> deleteTkey() async {
+    assert(headlessWebView != null, kDefaultUninitializedError);
+    await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        await window.thresholdKey.CRITICAL_deleteTkey();
+  ''');
+  }
+
+  @override
+  Future<void> syncLocalMetadataTransitions() async {
+    assert(headlessWebView != null, kDefaultUninitializedError);
+    await headlessWebView!.webViewController
+        .callAsyncJavaScript(functionBody: '''
+        await window.thresholdKey.syncLocalMetadataTransitions();
+  ''');
+  }
+
   Future<HeadlessInAppWebView> initJsEngine(String initialUrl,
       {InitProgressCallback? progressCallback}) async {
     Completer<InAppWebViewController> completer =

@@ -182,6 +182,8 @@ class ThresholdKeyWeb {
   external dynamic inputShare(String share, [String? type]);
   external dynamic outputShare(String shareIndex, [String? type]);
   external List<dynamic> getCurrentShareIndexes();
+  external dynamic syncLocalMetadataTransitions();
+  external dynamic CRITICAL_deleteTkey();
 }
 
 enum ChainNameSpaces { eip155, solana, other }

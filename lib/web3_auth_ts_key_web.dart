@@ -133,6 +133,17 @@ class Web3AuthTsKeyWeb extends Web3AuthTsKeyPlatform {
   }
 
   @override
+  Future<void> deleteTkey() async {
+    await js_util.promiseToFuture(thresholdKeyWeb.CRITICAL_deleteTkey());
+  }
+
+  @override
+  Future<void> syncLocalMetadataTransitions() async {
+    await js_util
+        .promiseToFuture(thresholdKeyWeb.syncLocalMetadataTransitions());
+  }
+
+  @override
   Future<List<String>> getSharesIndexes() async {
     final shares = thresholdKeyWeb.getCurrentShareIndexes();
     return shares.cast<String>();

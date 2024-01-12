@@ -269,10 +269,13 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<void> deleteTkey() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController
         .callAsyncJavaScript(functionBody: '''
         await window.thresholdKey.CRITICAL_deleteTkey();
   ''');
+    if (result?.error != null) {
+      throw Exception(result!.error);
+    }
   }
 
   @override

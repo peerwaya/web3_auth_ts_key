@@ -22,7 +22,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
           params.webInitialUrl ?? 'https://dev.web.gotok.app/tkey.html',
           progressCallback: progressCallback,
         );
-    await webview.webViewController.callAsyncJavaScript(functionBody: '''
+    final result =
+        await webview.webViewController.callAsyncJavaScript(functionBody: '''
           var initParams = JSON.parse(params);
           const serviceProvider = new ServiceProviderSfa.SfaServiceProvider({
             web3AuthOptions: {
@@ -52,7 +53,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
-              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
@@ -62,6 +62,9 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
           });
           await serviceProvider.init(privateKeyProvider);
 ''', arguments: {'params': jsonEncode(params.toJson())});
+    if (result?.error != null) {
+      throw Exception(result!.error);
+    }
     headlessWebView = webview;
   }
 

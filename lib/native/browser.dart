@@ -23,7 +23,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
           progressCallback: progressCallback,
         );
     final result =
-        await webview.webViewController.callAsyncJavaScript(functionBody: '''
+        await webview.webViewController!.callAsyncJavaScript(functionBody: '''
           var initParams = JSON.parse(params);
           const serviceProvider = new ServiceProviderSfa.SfaServiceProvider({
             web3AuthOptions: {
@@ -72,7 +72,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<String> getPostBoxKey() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final postBoxResult = await headlessWebView!.webViewController
+    final postBoxResult = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
             var initParams = JSON.parse(params);
             const oauthShare = await window.thresholdKey.serviceProvider.connect({
@@ -95,7 +95,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<KeyDetails> initializeTsKey([String? privateKey]) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final keyDetailsResult = await headlessWebView!.webViewController
+    final keyDetailsResult = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         var initParams = JSON.parse(params);
         await window.thresholdKey.initialize({
@@ -115,7 +115,8 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<ReconstructionDetails> reconstruct() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final reconstructionDetailsResult = await headlessWebView!.webViewController
+    final reconstructionDetailsResult = await headlessWebView!
+        .webViewController!
         .callAsyncJavaScript(functionBody: '''
         const reconstructionDetails = await window.thresholdKey.reconstructKey();
         return JSON.stringify(reconstructionDetails);
@@ -143,7 +144,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<String> generateNewShare() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         const share = await window.thresholdKey.generateNewShare();
         return share.newShareIndex.toString("hex");
@@ -160,7 +161,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<KeyDetails> deleteShare(String index) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final keyDetailsResult = await headlessWebView!.webViewController
+    final keyDetailsResult = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         await window.thresholdKey.deleteShare(i);
         return JSON.stringify(thresholdKey.getKeyDetails());
@@ -178,7 +179,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<void> inputShare(String share) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         await window.thresholdKey.inputShare(i);
       ''', arguments: {'i': share});
@@ -190,7 +191,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<String> outputShare(String index) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         const share = await window.thresholdKey.outputShare(i);
         return share.toString('hex');
@@ -207,7 +208,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<List<String>> getSharesIndexes() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         return await window.thresholdKey.getCurrentShareIndexes();
       ''');
@@ -224,7 +225,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   Future<String> generateSecurityQuestion(
       String question, String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         const share = await window.thresholdKey.modules.securityQuestions.generateNewShareWithSecurityQuestions(a, q);
         return share.newShareIndex.toString("hex");
@@ -241,7 +242,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<void> changeSecurityQuestion(String question, String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    await headlessWebView!.webViewController
+    await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         return await window.thresholdKey.modules.securityQuestions.changeSecurityQuestionAndAnswer(a, q);
       ''', arguments: {'q': question, 'a': answer});
@@ -250,7 +251,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<bool> inputSecurityQuestionShare(String answer) async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         return await window.thresholdKey.modules.securityQuestions.inputShareFromSecurityQuestions(a);
       ''', arguments: {'a': answer});
@@ -269,7 +270,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<void> deleteTkey() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    final result = await headlessWebView!.webViewController
+    final result = await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         await window.thresholdKey.CRITICAL_deleteTkey();
   ''');
@@ -281,7 +282,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
   @override
   Future<void> syncLocalMetadataTransitions() async {
     assert(headlessWebView != null, kDefaultUninitializedError);
-    await headlessWebView!.webViewController
+    await headlessWebView!.webViewController!
         .callAsyncJavaScript(functionBody: '''
         await window.thresholdKey.syncLocalMetadataTransitions();
   ''');
@@ -292,7 +293,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     Completer<InAppWebViewController> completer =
         Completer<InAppWebViewController>();
     final headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest: URLRequest(url: Uri.tryParse(initialUrl)),
+      initialUrlRequest: URLRequest(url: WebUri(initialUrl)),
       onWebViewCreated: (controller) {},
       onConsoleMessage: (controller, consoleMessage) {
         print(consoleMessage);

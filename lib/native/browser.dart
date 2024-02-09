@@ -53,6 +53,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
+              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
@@ -292,7 +293,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     Completer<InAppWebViewController> completer =
         Completer<InAppWebViewController>();
     final headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest: URLRequest(url: Uri.parse(initialUrl)),
+      initialUrlRequest: URLRequest(url: WebUri(initialUrl)),
       onWebViewCreated: (controller) {},
       onConsoleMessage: (controller, consoleMessage) {
         print(consoleMessage);

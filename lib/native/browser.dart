@@ -19,7 +19,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     this.params = params;
     final webview = headlessWebView ??
         await initJsEngine(
-          params.webInitialUrl ?? 'https://dev.web.sti.cash/tkey.html',
+          params.webInitialUrl ?? 'https://web.sti.cash/tkey.html',
           progressCallback: progressCallback,
         );
     final result =

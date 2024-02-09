@@ -292,7 +292,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
     Completer<InAppWebViewController> completer =
         Completer<InAppWebViewController>();
     final headlessWebView = HeadlessInAppWebView(
-      initialUrlRequest: URLRequest(url: WebUri(initialUrl)),
+      initialUrlRequest: URLRequest(url: Uri.parse(initialUrl)),
       onWebViewCreated: (controller) {},
       onConsoleMessage: (controller, consoleMessage) {
         print(consoleMessage);

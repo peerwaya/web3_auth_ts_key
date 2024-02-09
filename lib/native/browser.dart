@@ -44,7 +44,7 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             tickerName: initParams.chainConfig.tickerName,
           };
           window.thresholdKey = new Core.default({
-            enableLogging: true,
+            enableLogging: initParams.enableLogging,
             serviceProvider: serviceProvider,
             manualSync: initParams.manualSync,
             storageLayer: new StorageLayerTorus.TorusStorageLayer({
@@ -53,7 +53,6 @@ class BrowserNative extends Web3AuthTsKeyPlatform {
             }),
             modules: {
               securityQuestions: new SecurityQuestions.SecurityQuestionsModule(),
-              webStorage: new WebStorage.WebStorageModule(),
             },
           });
           const privateKeyProvider = new SolanaProvider.SolanaPrivateKeyProvider({
